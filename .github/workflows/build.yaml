@@ -46,7 +46,7 @@ jobs:
       run: |
         python3 auto_extract_offsets.py boot.img
     
-    - name: 移动target.h
+    - name: 移动target.h到源码目录
       run: |
         TARGET_FILE=$(find . -name "target.h" -type f | head -1)
         if [ -z "$TARGET_FILE" ]; then
@@ -55,6 +55,16 @@ jobs:
         fi
         echo "Found target.h at: $TARGET_FILE"
         mv "$TARGET_FILE" src/target.h
+
+    # --- 新增：上传 target.h 作为独立产物 ---
+    - name: 上传 target.h 文件
+      uses: actions/upload-artifact@v7
+      with:
+        name: target-header          # 产物名称
+        path: src/target.h           # 文件路径
+        retention-days: 1            # 保留天数
+        archive: false               # 不压缩，直接保留原文件
+    # --- 新增结束 ---
     
     - name: 设置Android NDK
       uses: nttld/setup-ndk@v1
